@@ -7,12 +7,26 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 🔹 Permitir CORS (desde tu frontend de Render)
+// 🔹 Lista de orígenes permitidos (tu IP, tu frontend y local)
+const allowedOrigins = [
+  'http://169.197.142.119', // ✅ Tu IP pública actual
+  'https://tienda-frontend-oazu.onrender.com', // ✅ Tu frontend desplegado
+  'http://localhost:5500' // ✅ Para pruebas locales con Live Server
+];
+
+// 🔹 Configurar CORS dinámico
 app.use(cors({
-  origin: [
-    'https://tienda-frontend-oazu.onrender.com', // tu frontend en Render
-    'http://localhost:5500' // útil si pruebas localmente con Live Server
-  ],
+  origin: function (origin, callback) {
+    // Permitir Postman o peticiones sin origen (como curl)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log(`🚫 CORS bloqueado: intento desde ${origin}`);
+      callback(new Error('No autorizado por CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
