@@ -3,7 +3,7 @@ require('dotenv').config();
 const env = process.env.NODE_ENV || 'local';
 let db;
 
-if (env === '3000') {
+if (env === 'local') {
   // 🔹 Base de datos local (MySQL)
   const mysql = require('mysql2');
   const pool = mysql.createPool({
