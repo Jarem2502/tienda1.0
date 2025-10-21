@@ -1,4 +1,3 @@
-// routes/auth.js
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
@@ -12,34 +11,7 @@ const { SECRET_KEY } = require('../middlewares/auth');
  *   description: Endpoints para registro y login de usuarios
  */
 
-/**
- * @swagger
- * /auth/register:
- *   post:
- *     summary: Registrar un nuevo usuario
- *     description: Crea un nuevo usuario en la base de datos con su contraseña cifrada en MD5.
- *     tags: [Autenticación]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               usuario:
- *                 type: string
- *                 example: jarem
- *               password:
- *                 type: string
- *                 example: 123456
- *     responses:
- *       200:
- *         description: Usuario registrado correctamente
- *       400:
- *         description: Datos incompletos o usuario ya existe
- *       500:
- *         description: Error en el servidor
- */
+// 🔹 Registrar usuario
 router.post('/register', async (req, res) => {
   const { usuario, password } = req.body;
 
@@ -48,64 +20,36 @@ router.post('/register', async (req, res) => {
   }
 
   try {
-    // Insertar nuevo usuario con contraseña en MD5
-    await db.query(
-      'INSERT INTO usuarios (usuario, password) VALUES (?, MD5(?))',
-      [usuario, password]
-    );
+    // Verificar si el usuario ya existe
+    const result = await db.query('SELECT * FROM usuarios WHERE usuario = $1', [usuario]);
+    if (result.rows.length > 0) {
+      return res.status(400).json({ message: 'El usuario ya existe' });
+    }
 
+    // Insertar nuevo usuario
+    await db.query('INSERT INTO usuarios (usuario, password) VALUES ($1, MD5($2))', [usuario, password]);
     res.json({ message: 'Usuario registrado correctamente' });
+
   } catch (err) {
     console.error(err);
-    if (err.code === 'ER_DUP_ENTRY') {
-      res.status(400).json({ message: 'El usuario ya existe' });
-    } else {
-      res.status(500).json({ message: 'Error al registrar usuario' });
-    }
+    res.status(500).json({ message: 'Error al registrar usuario' });
   }
 });
 
-/**
- * @swagger
- * /auth/login:
- *   post:
- *     summary: Iniciar sesión de usuario
- *     description: Verifica las credenciales y devuelve un token JWT si son correctas.
- *     tags: [Autenticación]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               usuario:
- *                 type: string
- *                 example: jarem
- *               password:
- *                 type: string
- *                 example: 123456
- *     responses:
- *       200:
- *         description: Login exitoso
- *       401:
- *         description: Credenciales incorrectas
- *       500:
- *         description: Error en el servidor
- */
+// 🔹 Login de usuario
 router.post('/login', async (req, res) => {
   const { usuario, password } = req.body;
   try {
-    const [rows] = await db.query(
-      'SELECT id, usuario FROM usuarios WHERE usuario = ? AND password = MD5(?)',
+    const result = await db.query(
+      'SELECT id, usuario FROM usuarios WHERE usuario = $1 AND password = MD5($2)',
       [usuario, password]
     );
 
-    if (rows.length === 0) {
+    if (result.rows.length === 0) {
       return res.status(401).json({ message: 'Usuario o contraseña incorrectos' });
     }
 
-    const user = rows[0];
+    const user = result.rows[0];
     const token = jwt.sign(
       { id: user.id, usuario: user.usuario },
       SECRET_KEY,
