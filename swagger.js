@@ -6,18 +6,31 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'API Express MySQL CRUD',
+      title: 'API de Tienda',
       version: '1.0.0',
-      description: 'Documentación de mi API creada con Express, MySQL y JWT',
+      description: 'Documentación de la API con Swagger',
     },
     servers: [
       {
-        url: 'http://localhost:3000',
-        description: 'Servidor local',
+        url: 'http://localhost:3000/api',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
       },
     ],
   },
-  apis: ['./routes/*.js'], // 👈 aquí Swagger buscará los comentarios
+  apis: ['./routes/*.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

@@ -1,4 +1,5 @@
 // index.js
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -24,11 +25,10 @@ require('./routes/imagenes');
 const authRoutes =
 require('./routes/auth');
 // Registrar rutas
-app.use('/categorias',
-categoriasRoutes);
-app.use('/productos', productosRoutes);
-app.use('/imagenes', imagenesRoutes);
-app.use('/auth', authRoutes);
+app.use('/api/categorias', categoriasRoutes);
+app.use('/api/productos', productosRoutes);
+app.use('/api/imagenes', imagenesRoutes);
+app.use('/api/auth', authRoutes);
 // Iniciar servidor
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
