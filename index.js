@@ -21,7 +21,7 @@ app.use(cors({
 app.use((req, res, next) => {
   const forwarded = req.headers['x-forwarded-for'];
   const clientIP = forwarded ? forwarded.split(',')[0].trim() : req.socket.remoteAddress;
-  const allowedIP = '179.6.43.176'; // tu IP pública en Perú
+  const allowedIP = '45.232.149.130'; // tu IP pública en Perú
 
   if (clientIP === allowedIP) {
     next();
