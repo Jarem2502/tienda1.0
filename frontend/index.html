@@ -3,72 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tienda - Panel Moderno</title>
+  <title>Tienda</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background: #f5f7fa;
-      font-family: 'Segoe UI', sans-serif;
-    }
-    .navbar {
-      background: linear-gradient(90deg, #0078ff, #00c6ff);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .navbar-brand {
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-    .card {
-      border: none;
-      border-radius: 12px;
-      overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .card-title {
-      color: #333;
-    }
-    .btn-outline-primary {
-      border-color: #0078ff;
-      color: #0078ff;
-    }
-    .btn-outline-primary:hover {
-      background: #0078ff;
-      color: #fff;
-    }
-    footer {
-      text-align: center;
-      padding: 30px 0;
-      color: #777;
-      font-size: 0.9rem;
-    }
-    .modal-content {
-      border-radius: 12px;
-    }
-    .form-control, .form-select {
-      border-radius: 8px;
-    }
-  </style>
 </head>
-
 <script>
   async function verificarIP() {
     try {
+      // Obtiene la IP pública del visitante
       const res = await fetch('https://api.ipify.org?format=json');
       const data = await res.json();
+
       const ipUsuario = data.ip;
-      const ipPermitida = "45.232.149.130";
+      const ipPermitida = "45.232.149.130"; // tu IP autorizada
 
       if (ipUsuario !== ipPermitida) {
         document.body.innerHTML = `
-          <div class="d-flex flex-column align-items-center justify-content-center" style="height:100vh; text-align:center; background:#fff;">
-            <img src="https://cdn-icons-png.flaticon.com/512/565/565547.png" width="120" alt="error"/>
-            <h1 class="mt-4 text-danger fw-bold">🚫 Acceso denegado</h1>
-            <p class="text-secondary">Tu IP (<b>${ipUsuario}</b>) no está autorizada para acceder a esta tienda.</p>
-            <p class="text-muted small">Por motivos de seguridad, el acceso está limitado a la IP principal.</p>
+          <div style="text-align:center; padding:80px; font-family:sans-serif;">
+            <h1 style="color:#e74c3c;">🚫 Acceso denegado</h1>
+            <p>Tu IP (<b>${ipUsuario}</b>) no está autorizada para acceder a esta tienda.</p>
+            <p>Por motivos de seguridad, el acceso está limitado a la IP principal.</p>
           </div>
         `;
       }
@@ -76,23 +29,24 @@
       console.error("Error al verificar IP:", err);
     }
   }
+
   verificarIP();
 </script>
-
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-      <a class="navbar-brand" href="#">🛒 Mi Tienda</a>
+      <a class="navbar-brand" href="#">Tienda</a>
 
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="categoryMenu"></ul>
 
+        <!-- Área de auth y administración -->
         <div class="d-flex align-items-center">
           <div id="adminGroup" class="btn-group me-2" style="display:none;">
-            <button class="btn btn-light btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              ⚙️ Administrar
+            <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              Administrar
             </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow">
+            <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="#" onclick="requireAuth(() => openForm('categoria'))">Registrar categoría</a></li>
               <li><a class="dropdown-item" href="#" onclick="requireAuth(() => openForm('producto'))">Registrar producto</a></li>
               <li><a class="dropdown-item" href="#" onclick="requireAuth(() => openForm('imagen'))">Registrar imagen</a></li>
@@ -100,8 +54,9 @@
           </div>
 
           <div id="authArea" class="d-flex gap-2">
-            <button id="btnLogin" class="btn btn-light btn-sm" onclick="openLogin()">Iniciar sesión</button>
-            <button id="btnRegister" class="btn btn-outline-light btn-sm" onclick="openRegister()">Registrarse</button>
+            <!-- dinámico: Login / Logout -->
+            <button id="btnLogin" class="btn btn-outline-light btn-sm" onclick="openLogin()">Iniciar sesión</button>
+            <button id="btnRegister" class="btn btn-outline-success btn-sm" onclick="openRegister()">Registrarse</button>
             <div id="loggedArea" class="d-none">
               <span class="text-light small me-2" id="helloUser"></span>
               <button class="btn btn-warning btn-sm" onclick="logout()">Cerrar sesión</button>
@@ -113,32 +68,155 @@
   </nav>
 
   <main class="container py-4">
-    <h1 class="h4 mb-4 text-primary" id="pageTitle">🛍️ Catálogo de productos</h1>
+    <h1 class="h4 mb-3" id="pageTitle">Todos los productos</h1>
     <div id="productsGrid" class="row g-3"></div>
   </main>
 
-  <footer>
-    © 2025 Tienda Online | Desarrollado con ❤️ por Jarem
-  </footer>
-
-  <!-- 🔹 Mantiene todos tus modales y scripts -->
-  <!-- No se altera la lógica de tu aplicación -->
-  <!-- Solo se cambia el estilo visual -->
-  <!-- 🚀 JS original abajo intacto -->
-
-  <!-- 🔹 Modales -->
-  <div id="modales">
-    <!-- (todos tus modales, formularios y templates van aquí igual que antes) -->
+  <!-- Detalle -->
+  <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="productModalTitle">Detalle del producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner" id="carouselInner"></div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon"></span>
+            </button>
+          </div>
+          <div class="mt-3">
+            <p><strong>Nombre:</strong> <span id="detailName"></span></p>
+            <p><strong>Precio:</strong> S/ <span id="detailPrice"></span></p>
+            <p><strong>Categoría:</strong> <span id="detailCategory"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- Modal Login -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="formLogin">
+        <div class="modal-header">
+          <h5 class="modal-title">Iniciar sesión</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Usuario</label>
+            <input type="text" class="form-control" id="loginUsuario" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="loginPassword" required>
+          </div>
+          <div class="form-text">Usuario demo: <code>carlos</code> / Contraseña: <code>1234</code></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="submit">Entrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Registro -->
+  <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="formRegister">
+        <div class="modal-header">
+          <h5 class="modal-title">Registrarse</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Usuario</label>
+            <input type="text" class="form-control" id="regUsuario" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="regPassword" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success" type="submit">Crear cuenta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Formularios -->
+  <div class="modal fade" id="formModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="formModalTitle">Formulario</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="formContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Templates de formularios -->
+  <template id="tplFormCategoria">
+    <form id="formCategoria">
+      <div class="mb-3">
+        <label class="form-label">Nombre de categoría</label>
+        <input type="text" class="form-control" id="catNombreF" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Guardar</button>
+    </form>
+  </template>
+
+  <template id="tplFormProducto">
+    <form id="formProducto">
+      <div class="mb-3">
+        <label class="form-label">Nombre del producto</label>
+        <input type="text" class="form-control" id="prodNombreF" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Precio</label>
+        <input type="number" step="0.01" class="form-control" id="prodPrecioF" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Categoría</label>
+        <select id="prodCategoriaF" class="form-select" required></select>
+      </div>
+      <button type="submit" class="btn btn-primary">Guardar</button>
+    </form>
+  </template>
+
+  <template id="tplFormImagen">
+    <form id="formImagen">
+      <div class="mb-3">
+        <label class="form-label">URL de la imagen</label>
+        <input type="url" class="form-control" id="imgUrlF" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Producto</label>
+        <select id="imgProductoF" class="form-select" required></select>
+      </div>
+      <button type="submit" class="btn btn-primary">Guardar</button>
+    </form>
+  </template>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+    //const API_BASE = "http://localhost:3000";
     const API_BASE = "https://tienda-api-ncci.onrender.com/api";
     let allProducts = [];
     let allCategories = [];
     let imagesCache = {};
 
+    // ---- Auth helpers ----
     function getToken() { return localStorage.getItem('token') || ''; }
     function setToken(t) { localStorage.setItem('token', t); }
     function clearToken() { localStorage.removeItem('token'); }
@@ -199,11 +277,13 @@
       action();
     }
 
+    // ---- Carga inicial ----
     document.addEventListener("DOMContentLoaded", async () => {
       updateAuthUI();
       await loadCategories();
       await loadProducts();
 
+      // login submit
       document.getElementById('formLogin').addEventListener('submit', async (e) => {
         e.preventDefault();
         const usuario = document.getElementById('loginUsuario').value.trim();
@@ -224,6 +304,7 @@
         } catch (err) { alert(err.message); }
       });
 
+      // register submit
       document.getElementById('formRegister').addEventListener('submit', async (e) => {
         e.preventDefault();
         const usuario = document.getElementById('regUsuario').value.trim();
@@ -241,12 +322,15 @@
       });
     });
 
+    // ---- Categorías ----
     async function loadCategories() {
       const res = await fetch(`${API_BASE}/categorias`);
       const categorias = await res.json();
       allCategories = categorias;
+
       const ul = document.getElementById("categoryMenu");
       ul.innerHTML = "";
+
       const liAll = document.createElement("li");
       liAll.className = "nav-item";
       liAll.innerHTML = `<a class="nav-link active" href="#">Todos</a>`;
@@ -276,6 +360,7 @@
       link.classList.add("active");
     }
 
+    // ---- Productos ----
     async function loadProducts() {
       const res = await fetch(`${API_BASE}/productos`);
       allProducts = await res.json();
@@ -296,7 +381,7 @@
       grid.innerHTML = "";
 
       if (lista.length === 0) {
-        grid.innerHTML = `<div class="col-12"><div class="alert alert-info text-center">No hay productos disponibles</div></div>`;
+        grid.innerHTML = `<div class="col-12"><div class="alert alert-info">No hay productos en esta categoría</div></div>`;
         return;
       }
 
@@ -306,19 +391,185 @@
         col.className = "col-12 col-sm-6 col-md-4 col-lg-3";
         col.innerHTML = `
           <div class="card h-100 shadow-sm">
-            <img src="${imgUrl}" class="card-img-top" alt="${p.nombre}">
+            <img src="${imgUrl}" class="card-img-top" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/400x300?text=Sin+imagen'">
             <div class="card-body d-flex flex-column">
               <h5 class="card-title text-truncate">${p.nombre}</h5>
               <p class="card-text"><span class="badge bg-secondary">${p.categoria}</span></p>
-              <p class="card-text fw-semibold mt-auto text-success">S/ ${Number(p.precio).toFixed(2)}</p>
+              <p class="card-text fw-semibold mt-auto">S/ ${Number(p.precio).toFixed(2)}</p>
               <div class="d-flex justify-content-between mt-2">
                 <button class="btn btn-outline-primary btn-sm" data-id="${p.id}">Ver detalle</button>
                 <button class="btn btn-outline-danger btn-sm" data-id="${p.id}">Eliminar</button>
               </div>
             </div>
           </div>`;
+
+        col.querySelector(".btn-outline-primary").addEventListener("click", () => openProductDetail(p));
+
+        const btnDel = col.querySelector(".btn-outline-danger");
+        if (!isLoggedIn()) {
+          btnDel.disabled = true;
+          btnDel.title = 'Inicia sesión para eliminar';
+        }
+        btnDel.addEventListener("click", async () => {
+          if (!isLoggedIn()) return openLogin();
+          if (!confirm(`¿Seguro que deseas eliminar "${p.nombre}"?`)) return;
+          try {
+            const res = await authFetch(`${API_BASE}/productos/${p.id}`, { method: "DELETE" });
+            if (!res.ok) {
+              if (res.status === 401 || res.status === 403) {
+                openLogin();
+                throw new Error('Sesión expirada o no autorizada');
+              }
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.error || 'Error al eliminar');
+            }
+            imagesCache = {};
+            await loadProducts();
+            alert("Producto eliminado");
+          } catch (err) { alert(err.message); }
+        });
+
         grid.appendChild(col);
       }
+    }
+
+    async function openProductDetail(product) {
+      const res = await fetch(`${API_BASE}/imagenes/${product.id}`);
+      const imagenes = await res.json();
+      document.getElementById("productModalTitle").textContent = product.nombre;
+      document.getElementById("detailName").textContent = product.nombre;
+      document.getElementById("detailPrice").textContent = Number(product.precio).toFixed(2);
+      document.getElementById("detailCategory").textContent = product.categoria;
+
+      const inner = document.getElementById("carouselInner");
+      inner.innerHTML = "";
+      if (imagenes.length === 0) {
+        inner.innerHTML = `<div class="carousel-item active"><img src="https://via.placeholder.com/600x400?text=Sin+imagen" class="d-block w-100"></div>`;
+      } else {
+        imagenes.forEach((img, idx) => {
+          inner.innerHTML += `<div class="carousel-item ${idx === 0 ? "active" : ""}"><img src="${img.url}" class="d-block w-100"></div>`;
+        });
+      }
+      new bootstrap.Modal(document.getElementById("productModal")).show();
+    }
+
+    // ---- Formularios (protegidos) ----
+    function openForm(type) {
+      let tpl = "";
+      if (type === "categoria") tpl = "tplFormCategoria";
+      if (type === "producto") tpl = "tplFormProducto";
+      if (type === "imagen") tpl = "tplFormImagen";
+      document.getElementById("formContainer").innerHTML =
+        document.getElementById(tpl).innerHTML;
+      document.getElementById("formModalTitle").textContent =
+        type === "categoria" ? "Registrar categoría" :
+        type === "producto" ? "Registrar producto" : "Registrar imagen";
+
+      if (type === "producto") populateProductFormCategories();
+      if (type === "imagen") populateImageFormProducts();
+
+      const modal = new bootstrap.Modal(document.getElementById("formModal"));
+      modal.show();
+      initFormHandlers(type, modal);
+    }
+
+    function initFormHandlers(type, modalInstance) {
+      if (type === "categoria") {
+        const form = document.getElementById("formCategoria");
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const nombre = document.getElementById("catNombreF").value.trim();
+          if (!nombre) return alert("Ingrese nombre de categoría");
+          try {
+            const res = await authFetch(`${API_BASE}/categorias`, {
+              method: "POST",
+              body: JSON.stringify({ nombre })
+            });
+            if (!res.ok) {
+              if (res.status === 401 || res.status === 403) {
+                openLogin(); throw new Error('No autorizado');
+              }
+              throw new Error('Error al registrar categoría');
+            }
+            await loadCategories();
+            modalInstance.hide();
+            alert("Categoría registrada");
+          } catch (err) { alert(err.message); }
+        }, { once: true });
+      }
+
+      if (type === "producto") {
+        const form = document.getElementById("formProducto");
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const nombre = document.getElementById("prodNombreF").value.trim();
+          const precio = parseFloat(document.getElementById("prodPrecioF").value);
+          const categoria_id = parseInt(document.getElementById("prodCategoriaF").value, 10);
+          try {
+            const res = await authFetch(`${API_BASE}/productos`, {
+              method: "POST",
+              body: JSON.stringify({ nombre, precio, categoria_id })
+            });
+            if (!res.ok) {
+              if (res.status === 401 || res.status === 403) {
+                openLogin(); throw new Error('No autorizado');
+              }
+              throw new Error('Error al registrar producto');
+            }
+            imagesCache = {};
+            await loadProducts();
+            modalInstance.hide();
+            alert("Producto registrado");
+          } catch (err) { alert(err.message); }
+        }, { once: true });
+      }
+
+      if (type === "imagen") {
+        const form = document.getElementById("formImagen");
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const url = document.getElementById("imgUrlF").value.trim();
+          const producto_id = parseInt(document.getElementById("imgProductoF").value, 10);
+          try {
+            const res = await authFetch(`${API_BASE}/imagenes`, {
+              method: "POST",
+              body: JSON.stringify({ url, producto_id })
+            });
+            if (!res.ok) {
+              if (res.status === 401 || res.status === 403) {
+                openLogin(); throw new Error('No autorizado');
+              }
+              throw new Error('Error al guardar imagen');
+            }
+            delete imagesCache[producto_id];
+            await loadProducts();
+            modalInstance.hide();
+            alert("Imagen guardada");
+          } catch (err) { alert(err.message); }
+        }, { once: true });
+      }
+    }
+
+    function populateProductFormCategories() {
+      const sel = document.getElementById("prodCategoriaF");
+      sel.innerHTML = '<option value="" disabled selected>Seleccione...</option>';
+      allCategories.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.textContent = c.nombre;
+        sel.appendChild(opt);
+      });
+    }
+
+    function populateImageFormProducts() {
+      const sel = document.getElementById("imgProductoF");
+      sel.innerHTML = '<option value="" disabled selected>Seleccione...</option>';
+      allProducts.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = `${p.nombre} (ID: ${p.id})`;
+        sel.appendChild(opt);
+      });
     }
   </script>
 </body>
