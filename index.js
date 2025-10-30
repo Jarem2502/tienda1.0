@@ -21,11 +21,11 @@ app.use(cors({
 app.use((req, res, next) => {
   const forwarded = req.headers['x-forwarded-for'];
   const clientIP = forwarded ? forwarded.split(',')[0].trim() : req.socket.remoteAddress;
-  const allowedIP = '45.232.149.146',
-    '45.232.149.130';
-  // tu IP pública en Perú
+  
+  // Lista de IPs permitidas
+  const allowedIPs = ['45.232.149.146', '45.232.149.130']; // Agrega aquí todas las IPs permitidas
 
-  if (clientIP === allowedIP) {
+  if (allowedIPs.includes(clientIP)) {
     next();
   } else {
     res.status(403).json({ error: 'Acceso denegado: IP no autorizada' });
