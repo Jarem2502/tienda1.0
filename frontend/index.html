@@ -14,15 +14,16 @@
       const data = await res.json();
 
       const ipUsuario = data.ip;
-      const ipPermitida = "45.232.149.146",
-        "45.232.149.130"; // tu IP autorizada
+      // Lista de IPs permitidas
+      const ipPermitidas = ["45.232.149.146", "45.232.149.130"]; // Agrega aquí todas las IPs permitidas
 
-      if (ipUsuario !== ipPermitida) {
+      // Verifica si la IP del usuario está en la lista de IPs permitidas
+      if (!ipPermitidas.includes(ipUsuario)) {
         document.body.innerHTML = `
           <div style="text-align:center; padding:80px; font-family:sans-serif;">
             <h1 style="color:#e74c3c;">🚫 Acceso denegado</h1>
             <p>Tu IP (<b>${ipUsuario}</b>) no está autorizada para acceder a esta tienda.</p>
-            <p>Por motivos de seguridad, el acceso está limitado a la IP principal.</p>
+            <p>Por motivos de seguridad, el acceso está limitado a las IPs autorizadas.</p>
           </div>
         `;
       }
@@ -30,7 +31,7 @@
       console.error("Error al verificar IP:", err);
     }
   }
-//qqq
+
   verificarIP();
 </script>
 <body>
